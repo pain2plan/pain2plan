@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>View Problems - Pain2Plan</title>
+    <style>
+      /* Font & Base Setup */
+      body, html {
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        height: 100%;
+        color: #fff;
+        background: url('./back2.png') no-repeat center center fixed;
+        background-size: cover;
+      }
+
+      /* Wrapper for background and content */
+      .background-wrapper {
+        position: relative;
+        height: 100vh; /* Ensure the container takes full viewport height */
+      }
+
+      /* Header */
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 60px;
+        position: relative;
+        z-index: 2;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+      }
+
+      .logo img {
+        height: 50px;
+        margin-right: 10px;
+      }
+
+      .navigation ul {
+        list-style: none;
+        display: flex;
+        gap: 25px;
+      }
+
+      .navigation a {
+        color: #fff;
+        text-decoration: none;
+        font-weight: bold;
+        transition: color 0.3s ease;
+      }
+
+      .navigation a:hover {
+        color: #00f0ff;
+      }
+
+      /* Problem Display Section */
+      .problem-list {
+        background: rgba(0, 0, 0, 0.6);
+        padding: 20px 30px;
+        border-radius: 20px;
+        max-width: 800px;
+        margin: 80px auto;
+        backdrop-filter: blur(12px);
+        box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+      }
+
+      .problem-item {
+        background: rgba(0, 0, 0, 0.8);
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 10px;
+      }
+
+      .problem-item h3 {
+        margin: 0 0 10px;
+        color: #00f0ff;
+      }
+
+      .problem-item p {
+        margin: 0;
+        color: #fff;
+      }
+
+      /* Button */
+      button {
+        padding: 12px;
+        border: none;
+        background: #00f0ff;
+        color: #000;
+        font-weight: bold;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 8px;
+        transition: background 0.3s ease;
+        margin-top: 10px;
+      }
+
+      button:hover {
+        background: #00c2cc;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="background-wrapper">
+        <header>
+            <div class="logo">
+              <img src="./logo.png" alt="Logo" />
+              <h1>Pain2Plan</h1>
+            </div>
+            <nav class="navigation">
+              <ul>
+                <li><a href="./index.html">Home</a></li>
+                <li><a href="./problemmap.html">World Problem</a></li>
+                <li><a href="./view.html">View Problem</a></li>
+                <li><a href="./submit.html">Submit Problem</a></li>
+                <li><a href="./login.html">LogIn</a></li>
+              </ul>
+            </nav>
+          </header>
+
+      <section>
+        <div class="problem-list" id="problem-list">
+          <h2>Submitted Problems</h2>
+          <!-- Problems will be dynamically loaded here -->
+        </div>
+      </section>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.10.0/firebase-firestore.js"></script>
+
+    <script>
+      // Initialize Firebase
+      const firebaseConfig = {
+        apiKey: "AIzaSyAqp1v9wM8Kh39cTo9R2kcNa3wqcYYLsNE",
+        authDomain: "pain2plan.firebaseapp.com",
+        projectId: "pain2plan",
+        storageBucket: "pain2plan.firebasestorage.app",
+        messagingSenderId: "521420300371",
+        appId: "1:521420300371:web:b8226c9e145443dd3da6a6",
+      };
+      const app = firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
+
+      // Fetch and display problems
+      window.onload = function() {
+        const problemContainer = document.getElementById('problem-container');
+
+        db.collection('problems').orderBy('timestamp', 'desc').get()
+          .then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+              const problem = doc.data();
+              const problemDiv = document.createElement('div');
+              problemDiv.classList.add('problem-item');
+              problemDiv.innerHTML = `
+                <div class="problem-header">
+                  <h3>Role: ${problem.role}</h3>
+                  <p>Submitted on: ${new Date(problem.timestamp.seconds * 1000).toLocaleString()}</p>
+                </div>
+                <div class="problem-text">
+                  <p>${problem.problemText}</p>
+                </div>
+              `;
+              problemContainer.appendChild(problemDiv);
+            });
+          }).catch((error) => {
+            alert('Error: ' + error.message);
+          });
+      };
+    </script>
+  </body>
+</html>
